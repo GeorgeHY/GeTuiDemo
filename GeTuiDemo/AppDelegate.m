@@ -7,7 +7,12 @@
 //
 
 #import "AppDelegate.h"
+#import "GexinSdk.h"
+#import "ViewController.h"
 
+#define APPKEY @"YKfRxnvSLVAfTyMo6ASJS3"
+#define APPSECRET @"xQIzUTlTap5c1ocM3FkKg8"
+#define APPID @"rnV4CJDeOq9UyXNnnwR2x3"
 @interface AppDelegate ()
 
 @end
@@ -16,7 +21,15 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    self.window = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+    ViewController * vc = [[ViewController alloc]init];
+    UINavigationController * navi = [[UINavigationController alloc]initWithRootViewController:vc];
+    self.window.rootViewController = navi;
+    [self.window makeKeyAndVisible];
+    
+    [self startSDK];
+    
+    
     return YES;
 }
 
@@ -41,5 +54,51 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+#pragma mark - Push server
+
+@synthesize gexinPusher = _gexinPusher;
+@synthesize clientID = _clientID;
+@synthesize sdkStatus = _sdkStatus;
+@synthesize lastPayloadIndex = _lastPayloadIndex;
+@synthesize payloadID = _payloadID;
+
+
+- (void)startSDK
+{
+    if (!_gexinPusher) {
+        _sdkStatus = SdkStatusStopped;
+        _clientID = nil;
+        
+        NSError * err = nil;
+        _gexinPusher = [GexinSdk createSdkWithAppId:APPID appKey:APPKEY appSecret:APPSECRET appVersion:@"1.0.0" delegate:self error:&err];
+        if (!_gexinPusher) {
+            NSLog(@"startSDK");
+            NSLog(@"%@",[NSString stringWithFormat:@"%@",[err localizedDescription]]);
+        }else{
+            _sdkStatus = SdkStatusStarting;
+        }
+        
+        NSLog(@"PushStatus:%u",_sdkStatus);
+        
+    }
+}
+
+- (void)stopSDK
+{
+    if (_gexinPusher) {
+        [_gexinPusher destroy];
+        _gexinPusher = nil;
+        
+        _sdkStatus = SdkStatusStopped;
+        
+        _clientID = nil;
+        
+        NSLog(@"PushStatus:%u",_sdkStatus);
+
+        
+    }
+}
+
 
 @end

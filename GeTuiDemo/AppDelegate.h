@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "GexinSdk.h"
+#import "ViewController.h"
 
 typedef enum{
     SdkStatusStopped,
@@ -15,29 +16,43 @@ typedef enum{
     SdkStatusStarted
 } SdkStatus;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate,GexinSdkDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,GexinSdkDelegate>{
+@private
+//    UINavigationController *_naviController;
+    NSString *_deviceToken;
+}
 
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) ViewController *viewController;
+
+//个推属性
+@property (strong, nonatomic) GexinSdk *gexinPusher;
+
+@property (retain, nonatomic) NSString *appKey;
+@property (retain, nonatomic) NSString *appSecret;
+@property (retain, nonatomic) NSString *appID;
+@property (retain, nonatomic) NSString *clientId;
+@property (assign, nonatomic) SdkStatus sdkStatus;
+@property (assign, nonatomic) int lastPayloadIndex;
+@property (retain, nonatomic) NSString *payloadId;
 
 #pragma mark - Push Server
-@property (nonatomic, strong) GexinSdk * gexinPusher;
-@property (nonatomic, strong) NSString * clientID;
-@property (nonatomic, assign) SdkStatus sdkStatus;
-
-@property (nonatomic, assign) NSInteger lastPayloadIndex;
-@property (nonatomic, strong) NSString * payloadID;
-
-- (void)startSDK;
-- (void)stopSDK;
+///创建个推SDK
+- (void)startSdkWith:(NSString *)appID appKey:(NSString *)appKey appSecret:(NSString *)appSecret;
+- (void)stopSdk;
 
 - (void)setDeviceToken:(NSString *)aToken;
-- (BOOL)setTags:(NSArray *)aTag error:(NSError *)error;
+- (BOOL)setTags:(NSArray *)aTag error:(NSError **)error;
+- (NSString *)sendMessage:(NSData *)body error:(NSError **)error;
 
 - (void)bindAlias:(NSString *)aAlias;
 - (void)unbindAlias:(NSString *)aAlias;
 
-- (void)testSDKFunction;
-- (void)testGetClientI;
+//- (void)testSdkFunction;
+//- (void)testSendMessage;
+//- (void)testGetClientId;
+
+
 
 
 @end
